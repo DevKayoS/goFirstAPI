@@ -37,9 +37,10 @@ func HandleGet(db map[string]string) http.HandlerFunc {
 		url, ok := db[code]
 
 		if !ok {
-			utils.SendJson(w, utils.Response{Error: "something went wrong"}, http.StatusInternalServerError)
+			http.Error(w, "url nao encontrada", http.StatusNotFound)
+			return
 		}
 
-		utils.SendJson(w, utils.Response{Data: url}, http.StatusOK)
+		http.Redirect(w, r, url, http.StatusPermanentRedirect)
 	}
 }
