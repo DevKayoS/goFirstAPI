@@ -13,7 +13,11 @@ type PostBody struct {
 	URL string `json:"url"`
 }
 
-func HandlePost(db map[string]string) http.HandlerFunc {
+type getShortenedUrlResponse struct {
+	FullUrl string `json:"full_url"`
+}
+
+func HandleCreateShortenUrl(db map[string]string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var body PostBody
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
@@ -27,6 +31,20 @@ func HandlePost(db map[string]string) http.HandlerFunc {
 		code := utils.GenCode()
 		db[code] = body.URL
 		utils.SendJson(w, utils.Response{Data: code}, http.StatusCreated)
+	}
+}
+
+func HandleGetShortenedUrl(db map[string]string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		code := chi.URLParam(r, "code")
+
+		fullUrl, ok := db[code]
+
+		if !ok {
+			utils.SendJson(w, utils.Response{Error: "code not found"}, http.StatusNotFound)
+		}
+
+		utils.SendJson(w, utils.Response{Data: getShortenedUrlResponse{FullUrl: fullUrl}}, http.StatusOK)
 	}
 }
 

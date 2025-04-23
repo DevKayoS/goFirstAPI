@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/DevKayoS/goFirstAPI/api"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
@@ -18,8 +19,12 @@ func main() {
 }
 
 func run() error {
-	db := make(map[string]string)
-	handler := api.NewHandler(db)
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "",
+		DB:       0,
+	})
+	handler := api.NewHandler(rdb)
 
 	app := http.Server{
 		ReadTimeout:  10 * time.Second,

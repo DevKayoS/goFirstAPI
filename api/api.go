@@ -15,8 +15,12 @@ func NewHandler(db map[string]string) http.Handler {
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)
 
-	r.Post("/api/shorten", services.HandlePost(db))
-	r.Get("/{code}", services.HandleGet(db))
+	r.Route("/api", func(r chi.Router) {
+		r.Route("/url", func(r chi.Router) {
+			r.Post("/api/shorten", services.HandleCreateShortenUrl(db))
+			r.Get("/{code}", services.HandleGet(db))
+		})
+	})
 
 	return r
 }
