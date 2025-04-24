@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/DevKayoS/goFirstAPI/api"
+	"github.com/DevKayoS/goFirstAPI/store"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -24,7 +25,9 @@ func run() error {
 		Password: "",
 		DB:       0,
 	})
-	handler := api.NewHandler(rdb)
+
+	store := store.NewStore(rdb)
+	handler := api.NewHandler(store)
 
 	app := http.Server{
 		ReadTimeout:  10 * time.Second,

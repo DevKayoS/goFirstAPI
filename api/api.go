@@ -4,11 +4,12 @@ import (
 	"net/http"
 
 	"github.com/DevKayoS/goFirstAPI/api/services"
+	"github.com/DevKayoS/goFirstAPI/store"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func NewHandler(db map[string]string) http.Handler {
+func NewHandler(store store.Store) http.Handler {
 	r := chi.NewMux()
 
 	r.Use(middleware.Recoverer)
@@ -17,8 +18,8 @@ func NewHandler(db map[string]string) http.Handler {
 
 	r.Route("/api", func(r chi.Router) {
 		r.Route("/url", func(r chi.Router) {
-			r.Post("/api/shorten", services.HandleCreateShortenUrl(db))
-			r.Get("/{code}", services.HandleGet(db))
+			r.Post("/shorten", services.HandleCreateShortenUrl(store))
+			r.Get("/{code}", services.HandleGetShortenedUrl(store))
 		})
 	})
 
